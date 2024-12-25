@@ -1,78 +1,57 @@
 import streamlit as st
 
-# פונקציה לעיצוב כפתורים
-def styled_button(label, key=None):
-    return st.button(label, key=key)
+# Function to render the timeline
+def render_timeline():
+    st.header("ציר זמן - התקדמות פרויקט")
+    st.markdown("""
+    **שלבים:**
+    1. פרויקט בתהליך רישוי 🔵
+    2. פרויקט ממתין להתקנה 🟠
+    3. פרויקט בתהליך התקנה 🟡
+    4. פרויקט הושלם ✅
+    """)
+    st.progress(75)  # Example progress
 
-# פונקציה לטעינת הדף הנכון
-def render_page():
-    if st.session_state.get("current_page") == "login":
-        login_page()
-    elif st.session_state.get("current_page") == "customers":
-        customers_page()
-    elif st.session_state.get("current_page") == "project_managers":
-        project_managers_page()
-    elif st.session_state.get("current_page") == "admin":
-        admin_page()
-    else:
-        st.session_state["current_page"] = "login"
-        login_page()
+# Function to render the projects table for project managers
+def render_projects_table():
+    st.header("רשימת פרויקטים פעילים")
+    data = {
+        "שם הלקוח": ["חנה ניסים", "דניאל ניסים", "שגית ויוסי"],
+        "סטטוס": ["בהתקנה", "המתנה לחיבור", "הושלם"],
+        "תאריך התחלה": ["25.8.24", "21.10.24", "29.9.24"],
+        "תאריך סיום משוער": ["5.1.25", "18.12.24", "19.11.24"],
+    }
+    st.table(data)
 
-# דף התחברות
-def login_page():
-    st.title("מערכת ניהול פרויקטים - הבית הירוק")
-    st.subheader("בחר סוג התחברות:")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if styled_button("לקוחות", key="customers_button"):
-            st.session_state["current_page"] = "customers"
-    with col2:
-        if styled_button("מנהלי פרויקטים", key="project_managers_button"):
-            st.session_state["current_page"] = "project_managers"
-    with col3:
-        if styled_button("מנהל חברה", key="admin_button"):
-            st.session_state["current_page"] = "admin"
+# Main function
+def main():
+    st.set_page_config(page_title="מערכת CRM", layout="wide")
 
-# עמוד לקוחות
-def customers_page():
-    st.title("תפריט לקוחות")
-    if styled_button("פתיחת פניה חדשה"):
-        st.write("פתיחת פניה חדשה (בקרוב)")
-    if styled_button("עדכון פרטים אישיים"):
-        st.write("עדכון פרטים אישיים (בקרוב)")
-    if styled_button("ניהול מסמכים נדרשים"):
-        st.write("ניהול מסמכים נדרשים (בקרוב)")
-    if styled_button("מעקב אחר סטטוס הפרויקט"):
-        st.write("מעקב אחר סטטוס הפרויקט (בקרוב)")
-    if styled_button("חזור"):
-        st.session_state["current_page"] = "login"
+    st.title("מערכת CRM - אב טיפוס")
 
-# עמוד מנהלי פרויקטים
-def project_managers_page():
-    st.title("תפריט מנהלי פרויקטים")
-    if styled_button("ניהול פרויקטים פעילים"):
-        st.write("ניהול פרויקטים פעילים (בקרוב)")
-    if styled_button("עדכון סטטוס פרויקט"):
-        st.write("עדכון סטטוס פרויקט (בקרוב)")
-    if styled_button("סיכום מלאי ושימוש"):
-        st.write("סיכום מלאי ושימוש (בקרוב)")
-    if styled_button("חזור"):
-        st.session_state["current_page"] = "login"
+    # Login screen
+    user_type = st.radio("בחר סוג התחברות:", ["לקוח", "מנהל פרויקט", "מנהל חברה"])
+    username = st.text_input("הכנס שם משתמש")
+    if st.button("התחבר"):
+        if username:
+            st.success(f"שלום, {username}!")
+            if user_type == "לקוח":
+                st.sidebar.title("תפריט לקוחות")
+                st.sidebar.button("ניהול מסמכים")
+                st.sidebar.button("מעקב סטטוס פרויקט")
+                st.sidebar.button("תשלומים")
+                render_timeline()
+            elif user_type == "מנהל פרויקט":
+                st.sidebar.title("תפריט מנהל פרויקט")
+                st.sidebar.button("רשימת פרויקטים פעילים")
+                render_projects_table()
+            elif user_type == "מנהל חברה":
+                st.sidebar.title("תפריט מנהל חברה")
+                st.sidebar.button("ניהול מלאי")
+                st.sidebar.button("דוחות ביצועים")
+                st.sidebar.button("תיעוד פרויקטים")
+        else:
+            st.error("יש להכניס שם משתמש כדי להתחבר.")
 
-# עמוד מנהל חברה
-def admin_page():
-    st.title("תפריט מנהל חברה")
-    if styled_button("ניהול מלאי והזמנות"):
-        st.write("ניהול מלאי והזמנות (בקרוב)")
-    if styled_button("תיעוד וארכיון פרויקטים"):
-        st.write("תיעוד וארכיון פרויקטים (בקרוב)")
-    if styled_button("דוחות ביצועים"):
-        st.write("דוחות ביצועים (בקרוב)")
-    if styled_button("חזור"):
-        st.session_state["current_page"] = "login"
-
-# הפעלת היישום
-if "current_page" not in st.session_state:
-    st.session_state["current_page"] = "login"
-
-render_page()
+if __name__ == "__main__":
+    main()
