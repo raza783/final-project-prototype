@@ -23,35 +23,56 @@ def render_projects_table():
     }
     st.table(data)
 
-# Main function
-def main():
-    st.set_page_config(page_title="מערכת CRM", layout="wide")
+# Main dashboard for each user type
+def client_dashboard(username):
+    st.sidebar.title("תפריט לקוחות")
+    st.sidebar.button("ניהול מסמכים")
+    st.sidebar.button("מעקב סטטוס פרויקט")
+    st.sidebar.button("תשלומים")
+    st.success(f"שלום, {username}!")
+    render_timeline()
 
-    st.title("מערכת CRM - אב טיפוס")
+def project_manager_dashboard(username):
+    st.sidebar.title("תפריט מנהל פרויקט")
+    st.sidebar.button("רשימת פרויקטים פעילים")
+    st.sidebar.button("ניהול מלאי")
+    st.sidebar.button("עדכון סטטוס")
+    st.success(f"שלום, {username}!")
+    render_projects_table()
 
-    # Login screen
+def company_manager_dashboard(username):
+    st.sidebar.title("תפריט מנהל חברה")
+    st.sidebar.button("ניהול מלאי")
+    st.sidebar.button("דוחות ביצועים")
+    st.sidebar.button("תיעוד פרויקטים")
+    st.success(f"שלום, {username}!")
+    st.info("כאן תוכל לראות דוחות ותיעוד שונים עבור החברה.")
+
+# Login function
+def login_page():
+    st.title("מסך התחברות")
     user_type = st.radio("בחר סוג התחברות:", ["לקוח", "מנהל פרויקט", "מנהל חברה"])
     username = st.text_input("הכנס שם משתמש")
     if st.button("התחבר"):
         if username:
-            st.success(f"שלום, {username}!")
-            if user_type == "לקוח":
-                st.sidebar.title("תפריט לקוחות")
-                st.sidebar.button("ניהול מסמכים")
-                st.sidebar.button("מעקב סטטוס פרויקט")
-                st.sidebar.button("תשלומים")
-                render_timeline()
-            elif user_type == "מנהל פרויקט":
-                st.sidebar.title("תפריט מנהל פרויקט")
-                st.sidebar.button("רשימת פרויקטים פעילים")
-                render_projects_table()
-            elif user_type == "מנהל חברה":
-                st.sidebar.title("תפריט מנהל חברה")
-                st.sidebar.button("ניהול מלאי")
-                st.sidebar.button("דוחות ביצועים")
-                st.sidebar.button("תיעוד פרויקטים")
+            return user_type, username
         else:
             st.error("יש להכניס שם משתמש כדי להתחבר.")
+            return None, None
+    return None, None
+
+# Main function
+def main():
+    st.set_page_config(page_title="מערכת CRM", layout="wide")
+
+    user_type, username = login_page()
+    if user_type and username:
+        if user_type == "לקוח":
+            client_dashboard(username)
+        elif user_type == "מנהל פרויקט":
+            project_manager_dashboard(username)
+        elif user_type == "מנהל חברה":
+            company_manager_dashboard(username)
 
 if __name__ == "__main__":
     main()
