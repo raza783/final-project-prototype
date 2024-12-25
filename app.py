@@ -1,133 +1,161 @@
 import streamlit as st
+import pandas as pd
 
-# פונקציה לעיצוב העמודים
-def set_page_config():
-    st.set_page_config(
-        page_title="מערכת ניהול - הבית הירוק",
-        page_icon=":seedling:",
-        layout="wide",
-    )
+def main():
+    st.set_page_config(page_title="הבית הירוק - מערכת ניהול", layout="wide")
+
+    # CSS לעיצוב מותאם
     st.markdown(
         """
         <style>
         body {
-            background-color: #f0fff0;
-            color: #2f4f4f;
+            background-color: #f4fdf4;
+            font-family: 'Arial', sans-serif;
         }
         .main-header {
-            font-size: 2.5rem;
+            color: #006400;
+            text-align: center;
+            font-size: 36px;
             font-weight: bold;
-            color: #006400;
+            margin-bottom: 40px;
         }
-        .sub-header {
-            font-size: 1.5rem;
-            color: #006400;
+        .section-header {
+            color: #228b22;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #228b22;
+        }
+        .button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #27ae60;
         }
         </style>
         """,
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
-# פונקציה לעמוד ההתחברות
-def login_page():
-    st.title("מערכת הבית הירוק לניהול פרויקטים")
-    st.subheader("ברוכים הבאים!")
-    st.write("אנא בחרו את סוג המשתמש והתחברו.")
-    
-    user_type = st.radio(
-        "בחר סוג משתמש",
-        ["לקוח", "מנהל פרויקטים", "מנהל חברה"]
-    )
-    
-    username = st.text_input("שם משתמש")
-    if st.button("התחבר"):
-        if username.strip():
-            st.session_state["user_type"] = user_type
-            st.session_state["username"] = username.strip()
-            st.session_state["logged_in"] = True
-        else:
-            st.error("אנא הזינו שם משתמש.")
+    st.markdown("<div class='main-header'>מערכת ניהול - הבית הירוק</div>", unsafe_allow_html=True)
 
-# עמוד הבית של לקוח
-def customer_dashboard():
-    st.markdown(f"### שלום, {st.session_state['username']}!")
-    st.subheader("עמוד ראשי - לקוח")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("**סטטוס פרויקט:**")
-        st.progress(0.5)
-        st.write("ממתין להתקנה")
-    with col2:
-        st.write("**התראות:**")
-        st.warning("יש לשלם אגרת רישום עד 5.1")
-    
-    if st.button("התנתק"):
-        st.session_state["logged_in"] = False
+    # מסך התחברות ראשי
+    choice = st.selectbox("בחר סוג התחברות", ["עמוד ראשי", "לקוח", "מנהל פרויקטים", "מנהל חברה"])
 
-# עמוד סטטוס פרויקט
-def project_status():
-    st.subheader("סטטוס פרויקט")
-    st.write("ציר זמן המציג את שלבי הפרויקט:")
-    stages = ["בתהליך רישוי", "ממתין להתקנה", "בהתקנה", "הושלם"]
-    progress = [0.25, 0.5, 0.75, 1.0]
-    for stage, prog in zip(stages, progress):
-        st.write(f"{stage} - {prog * 100:.0f}%")
-        st.progress(prog)
-
-# עמוד ניהול מסמכים
-def document_management():
-    st.subheader("ניהול מסמכים")
-    st.write("כאן תוכלו להעלות מסמכים נדרשים ולצפות במסמכים קיימים.")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("מסמכים הושלמו:")
-        st.success("צילום תעודת זהות")
-    with col2:
-        st.write("מסמכים נדרשים:")
-        st.warning("חתימה על הסכם")
-
-# עמוד התשלומים
-def payments():
-    st.subheader("תשלומים")
-    st.write("סטטוס התשלומים שלכם:")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("**אגרות ששולמו:**")
-        st.success("אגרת רישום")
-    with col2:
-        st.write("**אגרות פתוחות:**")
-        st.warning("אגרת חיבור לרשת")
-    
-    if st.button("תשלום אגרות"):
-        st.write("מעבר לפורטל חברת החשמל")
-
-# פונקציה לניווט
-def navigation():
-    if st.session_state["user_type"] == "לקוח":
-        menu = st.sidebar.radio(
-            "ניווט",
-            ["עמוד ראשי", "סטטוס פרויקט", "ניהול מסמכים", "תשלומים"]
-        )
-        if menu == "עמוד ראשי":
-            customer_dashboard()
-        elif menu == "סטטוס פרויקט":
-            project_status()
-        elif menu == "ניהול מסמכים":
-            document_management()
-        elif menu == "תשלומים":
-            payments()
+    if choice == "לקוח":
+        customer_dashboard()
+    elif choice == "מנהל פרויקטים":
+        project_manager_dashboard()
+    elif choice == "מנהל חברה":
+        company_manager_dashboard()
     else:
-        st.write("ממשק מנהלים בפיתוח...")
+        home_page()
 
-# הגדרת עמוד
-set_page_config()
 
-# לוגיקת התחברות וניווט
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
+def home_page():
+    st.markdown("<div class='section-header'>ברוכים הבאים למערכת הבית הירוק!</div>", unsafe_allow_html=True)
+    st.write("מערכת זו נועדה לנהל פרויקטים בצורה חכמה ויעילה.")
 
-if st.session_state["logged_in"]:
-    navigation()
-else:
-    login_page()
+
+def customer_dashboard():
+    page = st.radio("ניווט", ["עמוד ראשי", "סטטוס פרויקט", "ניהול מסמכים", "אגרות"])
+
+    if page == "עמוד ראשי":
+        st.markdown("<div class='section-header'>עמוד ראשי - לקוח</div>", unsafe_allow_html=True)
+        st.markdown("**סטטוס פרויקט**: ממתין להתקנה")
+        st.progress(0.6)
+        st.markdown("**התראות:**")
+        st.warning("יש לשלם אגרת חיבור עד לתאריך 5.1")
+
+    elif page == "סטטוס פרויקט":
+        st.markdown("<div class='section-header'>סטטוס פרויקט</div>", unsafe_allow_html=True)
+        stages = ["בתהליך רישוי", "ממתין להתקנה", "בהתקנה", "הושלם"]
+        progress = [0.25, 0.6, 0.8, 1.0]
+        for stage, prog in zip(stages, progress):
+            st.write(f"{stage}: {int(prog * 100)}%")
+            st.progress(prog)
+
+    elif page == "ניהול מסמכים":
+        st.markdown("<div class='section-header'>ניהול מסמכים</div>", unsafe_allow_html=True)
+        st.write("כאן תוכלו להעלות מסמכים ולצפות במסמכים קיימים.")
+        uploaded_file = st.file_uploader("העלה מסמך", type=["pdf", "docx"])
+        if uploaded_file is not None:
+            st.success("המסמך הועלה בהצלחה!")
+
+    elif page == "אגרות":
+        st.markdown("<div class='section-header'>אגרות</div>", unsafe_allow_html=True)
+        data = pd.DataFrame({
+            "אגרה": ["רישום", "היתר", "חיבור"],
+            "סטטוס": ["שולם", "ממתין", "ממתין"],
+            "קישור לתשלום": ["[לחץ כאן](https://www.example.com)", "[לחץ כאן](https://www.example.com)", "[לחץ כאן](https://www.example.com)"]
+        })
+        st.table(data)
+
+
+def project_manager_dashboard():
+    page = st.radio("ניווט", ["עמוד ראשי", "פרויקטים פעילים", "ארכיון פרויקטים", "העלאת מסמכים"])
+
+    if page == "עמוד ראשי":
+        st.markdown("<div class='section-header'>עמוד ראשי - מנהל פרויקטים</div>", unsafe_allow_html=True)
+        st.write("ציר זמן של כל הפרויקטים הפעילים ומשימות לטיפול.")
+
+    elif page == "פרויקטים פעילים":
+        st.markdown("<div class='section-header'>פרויקטים פעילים</div>", unsafe_allow_html=True)
+        active_projects = pd.DataFrame({
+            "פרויקט": ["פרויקט 1", "פרויקט 2"],
+            "סטטוס": ["בהתקנה", "ממתין להתקנה"],
+            "אחוז התקדמות": [75, 50]
+        })
+        st.table(active_projects)
+
+    elif page == "ארכיון פרויקטים":
+        st.markdown("<div class='section-header'>ארכיון פרויקטים</div>", unsafe_allow_html=True)
+        archive_data = pd.DataFrame({
+            "פרויקט": ["פרויקט 1", "פרויקט 2"],
+            "תאריך התחלה": ["01/01/2023", "05/03/2023"],
+            "תאריך סיום": ["15/02/2023", "20/04/2023"]
+        })
+        st.table(archive_data)
+
+    elif page == "העלאת מסמכים":
+        st.markdown("<div class='section-header'>העלאת מסמכים</div>", unsafe_allow_html=True)
+        uploaded_file = st.file_uploader("העלה מסמך", type=["pdf", "docx"])
+        if uploaded_file is not None:
+            st.success("המסמך הועלה בהצלחה!")
+
+
+def company_manager_dashboard():
+    page = st.radio("ניווט", ["עמוד ראשי", "תשלומים", "ארכיון פרויקטים"])
+
+    if page == "עמוד ראשי":
+        st.markdown("<div class='section-header'>עמוד ראשי - מנהל חברה</div>", unsafe_allow_html=True)
+        st.write("מעקב אחר תשלומים וסטטוס פרויקטים.")
+
+    elif page == "תשלומים":
+        st.markdown("<div class='section-header'>תשלומים</div>", unsafe_allow_html=True)
+        payment_data = pd.DataFrame({
+            "לקוח": ["לקוח א", "לקוח ב"],
+            "סכום ששולם": ["10,000", "15,000"],
+            "יתרה לתשלום": ["5,000", "2,000"]
+        })
+        st.table(payment_data)
+
+    elif page == "ארכיון פרויקטים":
+        st.markdown("<div class='section-header'>ארכיון פרויקטים</div>", unsafe_allow_html=True)
+        archive_data = pd.DataFrame({
+            "פרויקט": ["פרויקט 1", "פרויקט 2"],
+            "תאריך התחלה": ["01/01/2023", "05/03/2023"],
+            "תאריך סיום": ["15/02/2023", "20/04/2023"]
+        })
+        st.table(archive_data)
+
+if __name__ == "__main__":
+    main()
